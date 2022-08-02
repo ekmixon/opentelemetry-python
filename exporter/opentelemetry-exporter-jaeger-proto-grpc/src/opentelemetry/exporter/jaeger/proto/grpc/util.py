@@ -37,7 +37,6 @@ def _load_credential_from_file(path) -> ChannelCredentials:
 def _get_credentials(param):
     if param is not None:
         return param
-    creds_env = environ.get(OTEL_EXPORTER_JAEGER_CERTIFICATE)
-    if creds_env:
+    if creds_env := environ.get(OTEL_EXPORTER_JAEGER_CERTIFICATE):
         return _load_credential_from_file(creds_env)
     return ssl_channel_credentials()

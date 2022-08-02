@@ -72,16 +72,20 @@ class Client(Iface):
 class Processor(Iface, TProcessor):
     def __init__(self, handler):
         self._handler = handler
-        self._processMap = {}
-        self._processMap["emitZipkinBatch"] = Processor.process_emitZipkinBatch
-        self._processMap["emitBatch"] = Processor.process_emitBatch
+        self._processMap = {
+            "emitZipkinBatch": Processor.process_emitZipkinBatch,
+            "emitBatch": Processor.process_emitBatch,
+        }
 
     def process(self, iprot, oprot):
         (name, type, seqid) = iprot.readMessageBegin()
         if name not in self._processMap:
             iprot.skip(TType.STRUCT)
             iprot.readMessageEnd()
-            x = TApplicationException(TApplicationException.UNKNOWN_METHOD, 'Unknown function %s' % (name))
+            x = TApplicationException(
+                TApplicationException.UNKNOWN_METHOD, f'Unknown function {name}'
+            )
+
             oprot.writeMessageBegin(name, TMessageType.EXCEPTION, seqid)
             x.write(oprot)
             oprot.writeMessageEnd()
@@ -139,17 +143,14 @@ class emitZipkinBatch_args(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
-                if ftype == TType.LIST:
-                    self.spans = []
-                    (_etype3, _size0) = iprot.readListBegin()
-                    for _i4 in range(_size0):
-                        _elem5 = zipkincore.ttypes.Span()
-                        _elem5.read(iprot)
-                        self.spans.append(_elem5)
-                    iprot.readListEnd()
-                else:
-                    iprot.skip(ftype)
+            if fid == 1 and ftype == TType.LIST:
+                self.spans = []
+                (_etype3, _size0) = iprot.readListBegin()
+                for _i4 in range(_size0):
+                    _elem5 = zipkincore.ttypes.Span()
+                    _elem5.read(iprot)
+                    self.spans.append(_elem5)
+                iprot.readListEnd()
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -176,7 +177,7 @@ class emitZipkinBatch_args(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -208,12 +209,9 @@ class emitBatch_args(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
-                if ftype == TType.STRUCT:
-                    self.batch = jaeger.ttypes.Batch()
-                    self.batch.read(iprot)
-                else:
-                    iprot.skip(ftype)
+            if fid == 1 and ftype == TType.STRUCT:
+                self.batch = jaeger.ttypes.Batch()
+                self.batch.read(iprot)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -237,7 +235,7 @@ class emitBatch_args(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

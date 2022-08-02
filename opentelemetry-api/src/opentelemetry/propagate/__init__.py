@@ -123,20 +123,18 @@ def inject(
 
 try:
 
-    propagators = []
-
     # Single use variable here to hack black and make lint pass
     environ_propagators = environ.get(
         OTEL_PROPAGATORS,
         "tracecontext,baggage",
     )
 
-    for propagator in environ_propagators.split(","):
-        propagators.append(  # type: ignore
-            next(  # type: ignore
-                iter_entry_points("opentelemetry_propagator", propagator)
-            ).load()()
-        )
+    propagators = [
+        next(  # type: ignore
+            iter_entry_points("opentelemetry_propagator", propagator)
+        ).load()()
+        for propagator in environ_propagators.split(",")
+    ]
 
 except Exception:  # pylint: disable=broad-except
     logger.exception("Failed to load configured propagators")

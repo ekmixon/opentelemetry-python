@@ -218,15 +218,14 @@ class TestV1JsonEncoder(CommonEncoderTestCases.CommonJsonEncoderTest):
         )
         service_name = otel_span.name
 
-        binary_annotations = []
-        for tag_key, tag_expected_value in expected_tag_output.items():
-            binary_annotations.append(
-                {
-                    "key": tag_key,
-                    "value": tag_expected_value,
-                    "endpoint": {"serviceName": service_name},
-                }
-            )
+        binary_annotations = [
+            {
+                "key": tag_key,
+                "value": tag_expected_value,
+                "endpoint": {"serviceName": service_name},
+            }
+            for tag_key, tag_expected_value in expected_tag_output.items()
+        ]
 
         expected_output = [
             {

@@ -179,7 +179,7 @@ class Tag(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -214,24 +214,18 @@ class Log(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
-                if ftype == TType.I64:
-                    self.timestamp = iprot.readI64()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.LIST:
-                    self.fields = []
-                    (_etype3, _size0) = iprot.readListBegin()
-                    for _i4 in range(_size0):
-                        _elem5 = Tag()
-                        _elem5.read(iprot)
-                        self.fields.append(_elem5)
-                    iprot.readListEnd()
-                else:
-                    iprot.skip(ftype)
-            else:
+            if fid == 1 and ftype == TType.I64:
+                self.timestamp = iprot.readI64()
+            elif fid == 1 or fid == 2 and ftype != TType.LIST or fid != 2:
                 iprot.skip(ftype)
+            else:
+                self.fields = []
+                (_etype3, _size0) = iprot.readListBegin()
+                for _i4 in range(_size0):
+                    _elem5 = Tag()
+                    _elem5.read(iprot)
+                    self.fields.append(_elem5)
+                iprot.readListEnd()
             iprot.readFieldEnd()
         iprot.readStructEnd()
 
@@ -264,7 +258,7 @@ class Log(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -368,7 +362,7 @@ class SpanRef(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -591,7 +585,7 @@ class Span(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -626,24 +620,18 @@ class Process(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
-                if ftype == TType.STRING:
-                    self.serviceName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.LIST:
-                    self.tags = []
-                    (_etype31, _size28) = iprot.readListBegin()
-                    for _i32 in range(_size28):
-                        _elem33 = Tag()
-                        _elem33.read(iprot)
-                        self.tags.append(_elem33)
-                    iprot.readListEnd()
-                else:
-                    iprot.skip(ftype)
-            else:
+            if fid == 1 and ftype == TType.STRING:
+                self.serviceName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+            elif fid == 1 or fid == 2 and ftype != TType.LIST or fid != 2:
                 iprot.skip(ftype)
+            else:
+                self.tags = []
+                (_etype31, _size28) = iprot.readListBegin()
+                for _i32 in range(_size28):
+                    _elem33 = Tag()
+                    _elem33.read(iprot)
+                    self.tags.append(_elem33)
+                iprot.readListEnd()
             iprot.readFieldEnd()
         iprot.readStructEnd()
 
@@ -674,7 +662,7 @@ class Process(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -709,25 +697,19 @@ class Batch(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
-                if ftype == TType.STRUCT:
-                    self.process = Process()
-                    self.process.read(iprot)
-                else:
-                    iprot.skip(ftype)
-            elif fid == 2:
-                if ftype == TType.LIST:
-                    self.spans = []
-                    (_etype38, _size35) = iprot.readListBegin()
-                    for _i39 in range(_size35):
-                        _elem40 = Span()
-                        _elem40.read(iprot)
-                        self.spans.append(_elem40)
-                    iprot.readListEnd()
-                else:
-                    iprot.skip(ftype)
-            else:
+            if fid == 1 and ftype == TType.STRUCT:
+                self.process = Process()
+                self.process.read(iprot)
+            elif fid == 1 or fid == 2 and ftype != TType.LIST or fid != 2:
                 iprot.skip(ftype)
+            else:
+                self.spans = []
+                (_etype38, _size35) = iprot.readListBegin()
+                for _i39 in range(_size35):
+                    _elem40 = Span()
+                    _elem40.read(iprot)
+                    self.spans.append(_elem40)
+                iprot.readListEnd()
             iprot.readFieldEnd()
         iprot.readStructEnd()
 
@@ -760,7 +742,7 @@ class Batch(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -792,11 +774,8 @@ class BatchSubmitResponse(object):
             (fname, ftype, fid) = iprot.readFieldBegin()
             if ftype == TType.STOP:
                 break
-            if fid == 1:
-                if ftype == TType.BOOL:
-                    self.ok = iprot.readBool()
-                else:
-                    iprot.skip(ftype)
+            if fid == 1 and ftype == TType.BOOL:
+                self.ok = iprot.readBool()
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -822,7 +801,7 @@ class BatchSubmitResponse(object):
     def __repr__(self):
         L = ['%s=%r' % (key, value)
              for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        return f"{self.__class__.__name__}({', '.join(L)})"
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

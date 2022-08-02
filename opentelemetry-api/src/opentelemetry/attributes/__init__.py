@@ -137,11 +137,10 @@ class BoundedAttributes(MutableMapping):
         immutable: bool = True,
         max_value_len: Optional[int] = None,
     ):
-        if maxlen is not None:
-            if not isinstance(maxlen, int) or maxlen < 0:
-                raise ValueError(
-                    "maxlen must be valid int greater or equal to 0"
-                )
+        if maxlen is not None and (not isinstance(maxlen, int) or maxlen < 0):
+            raise ValueError(
+                "maxlen must be valid int greater or equal to 0"
+            )
         self.maxlen = maxlen
         self.dropped = 0
         self.max_value_len = max_value_len

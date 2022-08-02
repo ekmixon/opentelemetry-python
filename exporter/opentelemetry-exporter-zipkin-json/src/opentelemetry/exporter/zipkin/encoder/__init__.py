@@ -114,12 +114,11 @@ class Encoder(abc.ABC):
     @staticmethod
     def _get_parent_id(span_context) -> Optional[int]:
         if isinstance(span_context, Span):
-            parent_id = span_context.parent.span_id
+            return span_context.parent.span_id
         elif isinstance(span_context, SpanContext):
-            parent_id = span_context.span_id
+            return span_context.span_id
         else:
-            parent_id = None
-        return parent_id
+            return None
 
     def _extract_tags_from_dict(
         self, tags_dict: Optional[Dict]
@@ -268,11 +267,10 @@ class JsonEncoder(Encoder):
         self, spans: Sequence[Span], local_endpoint: NodeEndpoint
     ) -> str:
         encoded_local_endpoint = self._encode_local_endpoint(local_endpoint)
-        encoded_spans = []
-        for span in spans:
-            encoded_spans.append(
-                self._encode_span(span, encoded_local_endpoint)
-            )
+        encoded_spans = [
+            self._encode_span(span, encoded_local_endpoint) for span in spans
+        ]
+
         return json.dumps(encoded_spans)
 
     @staticmethod

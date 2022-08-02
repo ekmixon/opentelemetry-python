@@ -132,9 +132,6 @@ class TestCompositePropagator(unittest.TestCase):
 
         propagator.inject({}, setter=mock_setter)
 
-        inject_fields = set()
-
-        for mock_call in mock_setter.mock_calls:
-            inject_fields.add(mock_call[1][1])
+        inject_fields = {mock_call[1][1] for mock_call in mock_setter.mock_calls}
 
         self.assertEqual(inject_fields, propagator.fields)

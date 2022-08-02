@@ -333,7 +333,7 @@ class TraceState(typing.Mapping[str, str]):
             A string that adheres to the w3c tracestate
             header format.
         """
-        return ",".join(key + "=" + value for key, value in self._dict.items())
+        return ",".join(f"{key}={value}" for key, value in self._dict.items())
 
     @classmethod
     def from_header(cls, header_list: typing.List[str]) -> "TraceState":

@@ -217,17 +217,15 @@ class TestOTLPLogExporter(TestCase):
             self.assertEqual(
                 1,
                 mock_method.call_count,
-                "expected {} to be called for {} {}".format(
-                    mock_method, endpoint, insecure
-                ),
+                f"expected {mock_method} to be called for {endpoint} {insecure}",
             )
+
             self.assertEqual(
                 expected_endpoint,
                 mock_method.call_args[0][0],
-                "expected {} got {} {}".format(
-                    expected_endpoint, mock_method.call_args[0][0], endpoint
-                ),
+                f"expected {expected_endpoint} got {mock_method.call_args[0][0]} {endpoint}",
             )
+
             mock_method.reset_mock()
 
     @patch("opentelemetry.exporter.otlp.proto.grpc.exporter.expo")

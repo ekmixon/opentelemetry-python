@@ -67,14 +67,12 @@ class JsonV1Encoder(JsonEncoder, V1Encoder):
                 annotation["endpoint"] = encoded_local_endpoint
             encoded_span["annotations"] = encoded_annotations
 
-        binary_annotations = self._extract_binary_annotations(
+        if binary_annotations := self._extract_binary_annotations(
             span, encoded_local_endpoint
-        )
-        if binary_annotations:
+        ):
             encoded_span["binaryAnnotations"] = binary_annotations
 
-        debug = self._encode_debug(context)
-        if debug:
+        if debug := self._encode_debug(context):
             encoded_span["debug"] = debug
 
         parent_id = self._get_parent_id(span.parent)

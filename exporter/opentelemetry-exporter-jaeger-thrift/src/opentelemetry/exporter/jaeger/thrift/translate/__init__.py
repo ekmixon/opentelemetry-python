@@ -170,7 +170,7 @@ class ThriftTranslator(Translator):
 
         flags = int(ctx.trace_flags)
 
-        jaeger_span = TCollector.Span(
+        return TCollector.Span(
             traceIdHigh=_get_trace_id_high(trace_id),
             traceIdLow=_get_trace_id_low(trace_id),
             spanId=_convert_int_to_i64(span_id),
@@ -183,24 +183,21 @@ class ThriftTranslator(Translator):
             flags=flags,
             parentSpanId=_convert_int_to_i64(parent_id),
         )
-        return jaeger_span
 
     def _extract_tags(self, span: ReadableSpan) -> Sequence[TCollector.Tag]:
         # pylint: disable=too-many-branches
         translated = []
         if span.attributes:
             for key, value in span.attributes.items():
-                tag = _translate_attribute(
+                if tag := _translate_attribute(
                     key, value, self._max_tag_value_length
-                )
-                if tag:
+                ):
                     translated.append(tag)
         if span.resource.attributes:
             for key, value in span.resource.attributes.items():
-                tag = _translate_attribute(
+                if tag := _translate_attribute(
                     key, value, self._max_tag_value_length
-                )
-                if tag:
+                ):
                     translated.append(tag)
 
         status = span.status
@@ -280,10 +277,9 @@ class ThriftTranslator(Translator):
         for event in span.events:
             fields = []
             for key, value in event.attributes.items():
-                tag = _translate_attribute(
+                if tag := _translate_attribute(
                     key, value, self._max_tag_value_length
-                )
-                if tag:
+                ):
                     fields.append(tag)
 
             _append_dropped(

@@ -152,7 +152,7 @@ class TestBoundedAttributes(unittest.TestCase):
 
         # try to append more elements
         for key in self.base:
-            bdict["new-" + key] = self.base[key]
+            bdict[f"new-{key}"] = self.base[key]
 
         self.assertEqual(len(bdict), dic_len)
         self.assertEqual(bdict.dropped, dic_len)
@@ -162,7 +162,7 @@ class TestBoundedAttributes(unittest.TestCase):
 
         # test that elements in the dict are the new ones
         for key in self.base:
-            self.assertEqual(bdict["new-" + key], self.base[key])
+            self.assertEqual(bdict[f"new-{key}"], self.base[key])
 
         # delete an element
         del bdict["new-name"]

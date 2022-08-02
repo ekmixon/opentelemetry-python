@@ -68,9 +68,7 @@ _ENVIRON_TO_COMPRESSION = {
 class InvalidCompressionValueException(Exception):
     def __init__(self, environ_key: str, environ_value: str):
         super().__init__(
-            'Invalid value "{}" for compression envvar {}'.format(
-                environ_value, environ_key
-            )
+            f'Invalid value "{environ_value}" for compression envvar {environ_key}'
         )
 
 
@@ -155,12 +153,11 @@ def get_resource_data(
             resource_class(
                 **{
                     "resource": collector_resource,
-                    "instrumentation_library_{}".format(
-                        name
-                    ): instrumentation_library_data.values(),
+                    f"instrumentation_library_{name}": instrumentation_library_data.values(),
                 }
             )
         )
+
 
     return resource_data
 
@@ -178,8 +175,7 @@ def _load_credential_from_file(filepath) -> ChannelCredentials:
 def _get_credentials(creds, environ_key):
     if creds is not None:
         return creds
-    creds_env = environ.get(environ_key)
-    if creds_env:
+    if creds_env := environ.get(environ_key):
         return _load_credential_from_file(creds_env)
     return ssl_channel_credentials()
 
@@ -217,11 +213,7 @@ class OTLPExporterMixin(
         parsed_url = urlparse(endpoint)
 
         if insecure is None:
-            if parsed_url.scheme == "https":
-                insecure = False
-            else:
-                insecure = True
-
+            insecure = parsed_url.scheme != "https"
         if parsed_url.netloc:
             endpoint = parsed_url.netloc
 

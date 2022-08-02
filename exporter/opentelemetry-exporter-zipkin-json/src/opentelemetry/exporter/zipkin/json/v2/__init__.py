@@ -48,16 +48,13 @@ class JsonV2Encoder(JsonEncoder):
             "kind": self.SPAN_KIND_MAP[span.kind],
         }
 
-        tags = self._extract_tags_from_span(span)
-        if tags:
+        if tags := self._extract_tags_from_span(span):
             encoded_span["tags"] = tags
 
-        annotations = self._extract_annotations_from_events(span.events)
-        if annotations:
+        if annotations := self._extract_annotations_from_events(span.events):
             encoded_span["annotations"] = annotations
 
-        debug = self._encode_debug(context)
-        if debug:
+        if debug := self._encode_debug(context):
             encoded_span["debug"] = debug
 
         parent_id = self._get_parent_id(span.parent)

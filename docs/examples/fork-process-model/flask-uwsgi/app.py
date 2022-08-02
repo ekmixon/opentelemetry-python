@@ -46,9 +46,7 @@ def init_tracing():
 
 
 def fib_slow(n):
-    if n <= 1:
-        return n
-    return fib_slow(n - 1) + fib_fast(n - 2)
+    return n if n <= 1 else fib_slow(n - 1) + fib_fast(n - 2)
 
 
 def fib_fast(n):

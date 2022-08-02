@@ -131,7 +131,7 @@ class W3CBaggagePropagator(textmap.TextMapPropagator):
 
 def _format_baggage(baggage_entries: Mapping[str, object]) -> str:
     return ",".join(
-        quote_plus(str(key)) + "=" + quote_plus(str(value))
+        f"{quote_plus(str(key))}={quote_plus(str(value))}"
         for key, value in baggage_entries.items()
     )
 
@@ -139,6 +139,4 @@ def _format_baggage(baggage_entries: Mapping[str, object]) -> str:
 def _extract_first_element(
     items: Optional[Iterable[textmap.CarrierT]],
 ) -> Optional[textmap.CarrierT]:
-    if items is None:
-        return None
-    return next(iter(items), None)
+    return None if items is None else next(iter(items), None)

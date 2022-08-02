@@ -156,8 +156,7 @@ class JaegerExporter(SpanExporter):
         # batch all originate from one TracerProvider (and in turn have all
         # the same service.name)
         if spans:
-            service_name = spans[0].resource.attributes.get(SERVICE_NAME)
-            if service_name:
+            if service_name := spans[0].resource.attributes.get(SERVICE_NAME):
                 self.service_name = service_name
         translator = Translate(spans)
         pb_translator = ProtobufTranslator(

@@ -76,15 +76,10 @@ class OpenCensusSpanExporter(SpanExporter):
         # batch all originate from one TracerProvider (and in turn have all
         # the same service_name)
         if spans:
-            service_name = spans[0].resource.attributes.get(SERVICE_NAME)
-            if service_name:
+            if service_name := spans[0].resource.attributes.get(SERVICE_NAME):
                 self.node = utils.get_node(service_name, self.host_name)
         try:
             responses = self.client.Export(self.generate_span_requests(spans))
-
-            # Read response
-            for _ in responses:
-                pass
 
         except grpc.RpcError:
             return SpanExportResult.FAILURE
@@ -96,10 +91,9 @@ class OpenCensusSpanExporter(SpanExporter):
 
     def generate_span_requests(self, spans):
         collector_spans = translate_to_collector(spans)
-        service_request = trace_service_pb2.ExportTraceServiceRequest(
+        yield trace_service_pb2.ExportTraceServiceRequest(
             node=self.node, spans=collector_spans
         )
-        yield service_request
 
 
 # pylint: disable=too-many-branches
@@ -170,14 +164,13 @@ def translate_to_collector(spans: Sequence[ReadableSpan]):
                 collector_span_link.type = (
                     trace_pb2.Span.Link.Type.TYPE_UNSPECIFIED
                 )
-                if span.parent is not None:
-                    if (
-                        link.context.span_id == span.parent.span_id
-                        and link.context.trace_id == span.parent.trace_id
-                    ):
-                        collector_span_link.type = (
-                            trace_pb2.Span.Link.Type.PARENT_LINKED_SPAN
-                        )
+                if span.parent is not None and (
+                    link.context.span_id == span.parent.span_id
+                    and link.context.trace_id == span.parent.trace_id
+                ):
+                    collector_span_link.type = (
+                        trace_pb2.Span.Link.Type.PARENT_LINKED_SPAN
+                    )
 
                 if link.attributes:
                     for (key, value) in link.attributes.items():

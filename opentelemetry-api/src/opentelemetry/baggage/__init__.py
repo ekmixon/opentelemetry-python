@@ -123,7 +123,7 @@ def clear(context: Optional[Context] = None) -> Context:
 
 
 def _is_valid_key(name: str) -> bool:
-    return _KEY_PATTERN.fullmatch(str(name)) is not None
+    return _KEY_PATTERN.fullmatch(name) is not None
 
 
 def _is_valid_value(value: object) -> bool:

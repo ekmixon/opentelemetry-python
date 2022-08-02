@@ -111,16 +111,16 @@ def _encode_resource_spans(
     pb2_resource_spans = []
 
     for sdk_resource, sdk_instrumentations in sdk_resource_spans.items():
-        instrumentation_library_spans = []
-        for sdk_instrumentation, pb2_spans in sdk_instrumentations.items():
-            instrumentation_library_spans.append(
-                PB2InstrumentationLibrarySpans(
-                    instrumentation_library=(
-                        _encode_instrumentation_library(sdk_instrumentation)
-                    ),
-                    spans=pb2_spans,
-                )
+        instrumentation_library_spans = [
+            PB2InstrumentationLibrarySpans(
+                instrumentation_library=(
+                    _encode_instrumentation_library(sdk_instrumentation)
+                ),
+                spans=pb2_spans,
             )
+            for sdk_instrumentation, pb2_spans in sdk_instrumentations.items()
+        ]
+
         pb2_resource_spans.append(
             PB2ResourceSpans(
                 resource=_encode_resource(sdk_resource),
@@ -208,20 +208,19 @@ def _encode_status(status: Status) -> Optional[PB2Status]:
 
 
 def _encode_trace_state(trace_state: TraceState) -> Optional[str]:
-    pb2_trace_state = None
-    if trace_state is not None:
-        pb2_trace_state = ",".join(
-            [f"{key}={value}" for key, value in (trace_state.items())]
-        )
-    return pb2_trace_state
+    return (
+        ",".join([f"{key}={value}" for key, value in (trace_state.items())])
+        if trace_state is not None
+        else None
+    )
 
 
 def _encode_parent_id(context: Optional[SpanContext]) -> Optional[bytes]:
-    if isinstance(context, SpanContext):
-        encoded_parent_id = _encode_span_id(context.span_id)
-    else:
-        encoded_parent_id = None
-    return encoded_parent_id
+    return (
+        _encode_span_id(context.span_id)
+        if isinstance(context, SpanContext)
+        else None
+    )
 
 
 def _encode_attributes(
@@ -253,14 +252,14 @@ def _encode_resource(resource: Resource) -> PB2Resource:
 def _encode_instrumentation_library(
     instrumentation_info: InstrumentationInfo,
 ) -> PB2InstrumentationLibrary:
-    if instrumentation_info is None:
-        pb2_instrumentation_library = PB2InstrumentationLibrary()
-    else:
-        pb2_instrumentation_library = PB2InstrumentationLibrary(
+    return (
+        PB2InstrumentationLibrary()
+        if instrumentation_info is None
+        else PB2InstrumentationLibrary(
             name=instrumentation_info.name,
             version=instrumentation_info.version,
         )
-    return pb2_instrumentation_library
+    )
 
 
 def _encode_value(value: Any) -> PB2AnyValue:

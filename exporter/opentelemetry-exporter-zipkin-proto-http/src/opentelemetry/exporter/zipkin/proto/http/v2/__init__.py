@@ -70,16 +70,13 @@ class ProtobufEncoder(Encoder):
             kind=self.SPAN_KIND_MAP[span.kind],
         )
 
-        tags = self._extract_tags_from_span(span)
-        if tags:
+        if tags := self._extract_tags_from_span(span):
             encoded_span.tags.update(tags)
 
-        annotations = self._encode_annotations(span.events)
-        if annotations:
+        if annotations := self._encode_annotations(span.events):
             encoded_span.annotations.extend(annotations)
 
-        debug = self._encode_debug(context)
-        if debug:
+        if debug := self._encode_debug(context):
             encoded_span.debug = debug
 
         parent_id = self._get_parent_id(span.parent)
@@ -92,18 +89,17 @@ class ProtobufEncoder(Encoder):
         self, span_events: Optional[List[Event]]
     ) -> Optional[List]:
         annotations = self._extract_annotations_from_events(span_events)
-        if annotations is None:
-            encoded_annotations = None
-        else:
-            encoded_annotations = []
-            for annotation in annotations:
-                encoded_annotations.append(
-                    zipkin_pb2.Annotation(
-                        timestamp=annotation["timestamp"],
-                        value=annotation["value"],
-                    )
+        return (
+            None
+            if annotations is None
+            else [
+                zipkin_pb2.Annotation(
+                    timestamp=annotation["timestamp"],
+                    value=annotation["value"],
                 )
-        return encoded_annotations
+                for annotation in annotations
+            ]
+        )
 
     @staticmethod
     def _encode_local_endpoint(

@@ -181,8 +181,7 @@ def _extract_resource_tags(
     """
     tags = []
     for key, value in span.resource.attributes.items():
-        tag = _translate_attribute(key, value, max_tag_value_length)
-        if tag:
+        if tag := _translate_attribute(key, value, max_tag_value_length):
             tags.append(tag)
     return tags
 
@@ -247,7 +246,7 @@ class ProtobufTranslator(Translator):
             service_name=self.svc_name,
             tags=_extract_resource_tags(span, self._max_tag_value_length),
         )
-        jaeger_span = model_pb2.Span(
+        return model_pb2.Span(
             trace_id=trace_id,
             span_id=span_id,
             operation_name=span.name,
@@ -259,7 +258,6 @@ class ProtobufTranslator(Translator):
             logs=logs,
             process=process,
         )
-        return jaeger_span
 
     def _extract_tags(
         self, span: ReadableSpan
@@ -274,10 +272,9 @@ class ProtobufTranslator(Translator):
                     translated.append(key_value)
         if span.resource.attributes:
             for key, value in span.resource.attributes.items():
-                key_value = _translate_attribute(
+                if key_value := _translate_attribute(
                     key, value, self._max_tag_value_length
-                )
-                if key_value:
+                ):
                     translated.append(key_value)
 
         status = span.status
@@ -370,10 +367,9 @@ class ProtobufTranslator(Translator):
         for event in span.events:
             fields = []
             for key, value in event.attributes.items():
-                tag = _translate_attribute(
+                if tag := _translate_attribute(
                     key, value, self._max_tag_value_length
-                )
-                if tag:
+                ):
                     fields.append(tag)
 
             if event.attributes.dropped:

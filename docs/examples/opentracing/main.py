@@ -36,9 +36,7 @@ def fib(number):
     """Get the Nth Fibonacci number, cache intermediate results in Redis."""
     if number < 0:
         raise ValueError
-    if number in (0, 1):
-        return number
-    return fib(number - 1) + fib(number - 2)
+    return number if number in (0, 1) else fib(number - 1) + fib(number - 2)
 
 
 with tracer.start_as_current_span("Fibonacci") as span:
